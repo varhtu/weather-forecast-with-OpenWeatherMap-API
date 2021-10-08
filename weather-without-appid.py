@@ -14,15 +14,20 @@ while True:
     print("...")
 
 
-    #my_function = unix_time_converter
+    #my_function = unix_time_converter - Full Day, Date, Time format
     def unix_timestamp_converter(self):
-        inputtime = datetime.datetime.fromtimestamp(int(self)).strftime('%Y-%m-%d %H:%M:%S')
+        inputtime = datetime.datetime.fromtimestamp(int(self)).strftime('%A (%d %b %Y) %H:%M')
         return inputtime
 
-    #my_function = unix_time_converter
+    #my_function = unix_time_converter - Hours:Minutes only
     def unix_timestamp_converter2(self):
         inputtime2 = datetime.datetime.fromtimestamp(int(self)).strftime('%H:%M')
         return inputtime2
+
+    #my_function = unix_time_converter - Day and Date
+    def unix_timestamp_converter3(self):
+        inputtime3 = datetime.datetime.fromtimestamp(int(self)).strftime('%A (%d %b %Y)')
+        return inputtime3
 
     #my rain_intensity function:
     def rain_intensity(self):
@@ -46,7 +51,7 @@ while True:
     #request URL template --> https://api.openweathermap.org/data/2.5/onecall?lat=  {lat}  &lon=  {lon}  &exclude=  {part}  &appid=  {API key}
 
 
-    endpoint = ("https://api.openweathermap.org/data/2.5/onecall?lat=51.4945386&lon=-0.1945962&exclude=alert&appid=********************************************************************&units=metric")
+    endpoint = ("https://api.openweathermap.org/data/2.5/onecall?lat=51.4945386&lon=-0.1945962&exclude=alert&appid=*****************************************************&units=metric")
     #print("Retrieving OpenWeaterMap data from: ", endpoint)
     data = requests.get(endpoint)
 
@@ -60,7 +65,7 @@ while True:
 
     Choose weather forecast:
 
-    current / minutely / 12h / 7d
+    current / tomorrow / minutely / 12h / 7d
 
     User input:
     ''')
@@ -70,16 +75,35 @@ while True:
         print("")
         currentweather = allweatherdata['current']
         #print(currentweather)
-        print("Current time: ", unix_timestamp_converter(currentweather['dt']))
+        print("Current time: ", unix_timestamp_converter3(currentweather['dt']))
         print("")
         print("Current temperature:  ", round(currentweather['temp'], 1))
         print("Current weather:  ", currentweather['weather'][0]['description'])
         print("Wind speed:  ", currentweather['wind_speed'], "m/s")
         print("")
-        print("Sunrise time:  ", unix_timestamp_converter(currentweather['sunrise']))
-        print("Sunset time:  ", unix_timestamp_converter(currentweather['sunset']))
+        print("Sunrise time:  ", unix_timestamp_converter2(currentweather['sunrise']))
+        print("Sunset time:  ", unix_timestamp_converter2(currentweather['sunset']))
         print("")
         print("-----------------------------------------------------------------------------------------------")
+
+
+    if userinput == "tomorrow":
+        print("-----------------------------------------------------------------------------------------------")
+        print("TOMORROW'S WEATHER FORECAST")
+        print("")
+
+        tomorrowweather = allweatherdata['daily']
+        #print(dailyweather)
+        for line in tomorrowweather[1:2]:
+            #print(line)
+            print("Date: ", unix_timestamp_converter3(line['dt']))
+            print("Daytime Temperature:  ", round(line['temp']['day'], 1))
+            print("Nighttime Temperature:  ", round(line['temp']['night'], 1))
+            print("Weather:  ", line['weather'][0]['description'])
+            print("Chance of Rain:  ", line['pop']*100, "%")
+            print("")
+        print("-----------------------------------------------------------------------------------------------")
+
 
     if userinput == "12h":
         print("-----------------------------------------------------------------------------------------------")
@@ -115,7 +139,7 @@ while True:
         dailyweather = allweatherdata['daily']
         #print(dailyweather)
         for line in dailyweather:
-            print("Date: ", unix_timestamp_converter(line['dt']))
+            print("Date: ", unix_timestamp_converter3(line['dt']))
             print("Daytime Temperature:  ", round(line['temp']['day'], 1))
             print("Nighttime Temperature:  ", round(line['temp']['night'], 1))
             print("Weather:  ", line['weather'][0]['description'])
